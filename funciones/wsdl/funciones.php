@@ -1,6 +1,8 @@
 <?php
 
-set_time_limit(0);
+// set_time_limit(0);
+set_time_limit(6000000);
+ini_set('max_execution_time', 6000000);
 $connBD = new mysqli('localhost', 'root', '', 'rrhh_infotipo');
 $connBD->query("SET NAMES 'utf8'"); // Para que se muestren las tildes
 if (!$connBD) {
@@ -15,29 +17,31 @@ function insertInfotipo($infotipo, $items, $connBD)
     $datos = $items; // json_decode($items, true);
 
     if ($infotipo == 'INF_0002') {
-        $resp0002 = Insertar0002($datos, $connBD);
+        $insert = Insertar0002($datos, $connBD);
     }
     if ($infotipo == 'INF_0021') {
-        $resp0021 = Insertar0021($datos, $connBD);
+        $insert = Insertar0021($datos, $connBD);
     }
     if ($infotipo == 'INF_0032') {
-        $resp0032 = Insertar0032($datos, $connBD);
+        $insert = Insertar0032($datos, $connBD);
     }
     if ($infotipo == 'INF_0167') {
-        $resp0167 = Insertar0167($datos, $connBD);
+        $insert = Insertar0167($datos, $connBD);
     }
     if ($infotipo == 'INF_0168') {
-        $resp0168 = Insertar0168($datos, $connBD);
+        $insert = Insertar0168($datos, $connBD);
     }
     if ($infotipo == 'INF_0169') {
-        $resp0169 = Insertar0169($datos, $connBD);
+        $insert = Insertar0169($datos, $connBD);
     }
     if ($infotipo == 'INF_0171') {
-        $resp0171 = Insertar0171($datos, $connBD);
+        $insert = Insertar0171($datos, $connBD);
     }
+
+    return $insert;
 }
 
-function limpiar($infotipo, $connBD)
+function limpiar($connBD)
 {
     $query = 'delete from  inf_0002';
     $borrar = $connBD->query($query);
@@ -95,30 +99,35 @@ function logInfotipos($infotipo, $estatus, $connBD, $fechaSolicitada)
 
 function Insertar0002($datos, $connBD)
 {
-    $Insertar = $connBD->query('CALL sp_inf_0002('.$datos['PERNR'].',
-    "'.$datos['ENDDA'].'",
-    "'.$datos['BEGDA'].'",
-    "'.$datos['AEDTM'].'",
-    "'.$datos['UNAME'].'",
-    "'.$datos['NACHN'].'",
-    "'.$datos['VORNA'].'",
-    "'.$datos['KNZNM'].'",
-    "'.$datos['ANRED'].'",
-    "'.$datos['GESCH'].'",
-    "'.$datos['GBDAT'].'",
-    "'.$datos['GBLND'].'",
-    "'.$datos['GBDEP'].'",
-    "'.$datos['GBORT'].'",
-    "'.$datos['NATIO'].'",
-    "'.$datos['SPRSL'].'",
-    "'.$datos['FAMST'].'",
-    "'.@$datos['FAMDT'].'",
-    "'.@$datos['ANZKD'].'",
-    '.$datos['GBJHR'].',
-    '.$datos['GBMON'].',
-    '.$datos['GBTAG'].',
-    "'.$datos['NCHMC'].'",
-    "'.$datos['VNAMC'].'")');
+    $Insertar = $connBD->query('CALL sp_inf_0002(
+                            '.$datos['PERNR'].',
+                            "'.$datos['ENDDA'].'",
+                            "'.$datos['BEGDA'].'",
+                            "'.$datos['AEDTM'].'",
+                            "'.$datos['UNAME'].'",
+                            "'.$datos['NACHN'].'",
+                            "'.$datos['VORNA'].'",
+                            "'.$datos['KNZNM'].'",
+                            "'.$datos['ANRED'].'",
+                            "'.$datos['GESCH'].'",
+                            "'.$datos['GBDAT'].'",
+                            "'.$datos['GBLND'].'",
+                            "'.$datos['GBDEP'].'",
+                            "'.$datos['GBORT'].'",
+                            "'.$datos['NATIO'].'",
+                            "'.$datos['SPRSL'].'",
+                            "'.$datos['FAMST'].'",
+                            "'.@$datos['FAMDT'].'",
+                            "'.@$datos['ANZKD'].'",
+                            "'.$datos['ICNUM'].'",
+                            "'.@$datos['PERSG'].'",
+                            "'.@$datos['PERSK'].'",
+                            "'.@$datos['GBJHR'].'",
+                            "'.@$datos['GBMON'].'",
+                            "'.@$datos['GBTAG'].'",
+                            "'.@$datos['NCHMC'].'",
+                            "'.@$datos['VNAMC'].'")'
+    );
 
     if ($Insertar) {
         return $Insertar;
@@ -129,13 +138,36 @@ function Insertar0002($datos, $connBD)
 
 function Insertar0021($datos, $connBD)
 {
-    $Insertar = $connBD->query('CALL sp_inf_0021('.$datos['PERNR'].',"'.$datos['FAMSA'].'","'.$datos['FGBDT'].'","'.$datos['FAVOR'].'","'.$datos['FANAM'].'","'.$datos['ENAME'].'")');
-
-    // $Insertar = $connBD->query($query);
+    $Insertar = $connBD->query('CALL sp_inf_0021(
+                                '.$datos['PERNR'].',
+                                "'.@$datos['OBJPS'].'",
+                                "'.@$datos['UNAME'].'",
+                                "'.@$datos['FAMSA'].'",
+                                "'.@$datos['FGBDT'].'",
+                                '.$datos['FASEX'].',
+                                "'.@$datos['FAVOR'].'",
+                                "'.@$datos['FANAM'].'",
+                                "'.@$datos['ENAME'].'",
+                                '.$datos['IDNUM'].')
+                                ');
 
     if ($Insertar) {
         return $Insertar;
     } else {
+        echo 'CALL sp_inf_0021(
+            '.$datos['PERNR'].',
+            "'.@$datos['OBJPS'].'",
+            "'.@$datos['UNAME'].'",
+            "'.@$datos['FAMSA'].'",
+            "'.@$datos['FGBDT'].'",
+            '.$datos['FASEX'].',
+            "'.@$datos['FAVOR'].'",
+            "'.@$datos['FANAM'].'",
+            "'.@$datos['ENAME'].'",
+            '.$datos['IDNUM'].')
+            ';
+        exit;
+
         return 0;
     }
 }
@@ -145,16 +177,31 @@ function Insertar0032($datos, $connBD)
     $Insertar = $connBD->query('CALL sp_inf_0032(
                                                 '.$datos['MANDT'].',
                                                 '.$datos['PERNR'].',
-                                                "'.$datos['ENDDA'].'",
-                                                "'.$datos['BEGDA'].'",
-                                                "'.$datos['AEDTM'].'",
-                                                "'.$datos['UNAME'].'",
-                                                "'.$datos['WAERS'].'",
-                                                "'.$datos['ZZNUMEDF'].'")');
+                                                "'.@$datos['ENDDA'].'",
+                                                "'.@$datos['BEGDA'].'",
+                                                "'.@$datos['AEDTM'].'",
+                                                "'.@$datos['UNAME'].'",
+                                                "'.@$datos['WAERS'].'",
+                                                "'.@$datos['GEBNR'].'",
+                                                "'.@$datos['ZZNUMEDF'].'")
+                                                ');
 
     if ($Insertar) {
         return $Insertar;
     } else {
+        echo 'CALL sp_inf_0032(
+            '.$datos['MANDT'].',
+            '.$datos['PERNR'].',
+            "'.$datos['ENDDA'].'",
+            "'.$datos['BEGDA'].'",
+            "'.$datos['AEDTM'].'",
+            "'.$datos['UNAME'].'",
+            "'.$datos['WAERS'].'",
+            "'.@$datos['GEBNR'].'",
+            "'.$datos['ZZNUMEDF'].'")
+            ';
+        exit;
+
         return 0;
     }
 }
@@ -163,11 +210,26 @@ function Insertar0167($datos, $connBD)
 {
     $Insertar = $connBD->query('CALL sp_inf_0167(
         '.$datos['PERNR'].',
-        "'.$datos['BAREA'].'",
-        "'.$datos['PLTYP'].'",
-        "'.$datos['BPLAN'].'",
-        "'.$datos['BOPTI'].'",
-        "'.$datos['DEPCV'].'")');
+        "'.@$datos['BAREA'].'",
+        "'.@$datos['PLTYP'].'",
+        "'.@$datos['BPLAN'].'",
+        "'.@$datos['BOPTI'].'",
+        "'.@$datos['DEPCV'].'",
+        "'.@$datos['DTY01'].'",
+        "'.@$datos['DID01'].'",
+        "'.@$datos['DTY02'].'",
+        "'.@$datos['DID02'].'",
+        "'.@$datos['DTY03'].'",
+        "'.@$datos['DID03'].'",
+        "'.@$datos['DTY04'].'",
+        "'.@$datos['DID04'].'",
+        "'.@$datos['DTY05'].'",
+        "'.@$datos['DID05'].'",
+        "'.@$datos['DTY06'].'",
+        "'.@$datos['DID06'].'",
+        "'.@$datos['DTY07'].'",
+        "'.@$datos['DID07'].'"
+        )');
 
     if ($Insertar) {
         return $Insertar;
@@ -180,17 +242,39 @@ function Insertar0168($datos, $connBD)
 {
     $Insertar = $connBD->query('CALL sp_inf_0168(
         '.$datos['PERNR'].',
-        "'.$datos['SUBTY'].'",
-        "'.$datos['ENDDA'].'",
-        "'.$datos['BEGDA'].'",
-        "'.$datos['AEDTM'].'",
-        "'.$datos['UNAME'].'",
-        "'.$datos['BAREA'].'",
-        "'.$datos['PLTYP'].'",
-        "'.$datos['BPLAN'].'",
+        "'.@$datos['SUBTY'].'",
+        "'.@$datos['ENDDA'].'",
+        "'.@$datos['BEGDA'].'",
+        "'.@$datos['AEDTM'].'",
+        "'.@$datos['UNAME'].'",
+        "'.@$datos['BAREA'].'",
+        "'.@$datos['PLTYP'].'",
+        "'.@$datos['BPLAN'].'",
         "'.@$datos['ELIDT'].'",
-        "'.$datos['BCOVR'].'",
-        "'.$datos['ENRTY'].'")');
+        "'.@$datos['BCOVR'].'",
+        "'.@$datos['ENRTY'].'",
+        "'.@$datos['DTY01'].'",
+        "'.@$datos['DID01'].'",
+        "'.@$datos['BPT01'].'",
+        "'.@$datos['DTY02'].'",
+        "'.@$datos['DID02'].'",
+        "'.@$datos['BPT02'].'",
+        "'.@$datos['DTY03'].'",
+        "'.@$datos['DID03'].'",
+        "'.@$datos['BPT03'].'",
+        "'.@$datos['DTY04'].'",
+        "'.@$datos['DID04'].'",
+        "'.@$datos['BPT04'].'",
+        "'.@$datos['DTY05'].'",
+        "'.@$datos['DID05'].'",
+        "'.@$datos['BPT05'].'",
+        "'.@$datos['DTY06'].'",
+        "'.@$datos['DID06'].'",
+        "'.@$datos['BPT06'].'",
+        "'.@$datos['DTY07'].'",
+        "'.@$datos['DID07'].'",
+        "'.@$datos['BPT07'].'"
+        )');
 
     if ($Insertar) {
         return $Insertar;
@@ -203,17 +287,17 @@ function Insertar0169($datos, $connBD)
 {
     $Insertar = $connBD->query('CALL sp_inf_0169(
                                     '.$datos['PERNR'].',
-                                    "'.$datos['SUBTY'].'",
-                                    "'.$datos['ENDDA'].'",
-                                    "'.$datos['BEGDA'].'",
-                                    "'.$datos['AEDTM'].'",
-                                    "'.$datos['UNAME'].'",
-                                    "'.$datos['BAREA'].'",
-                                    "'.$datos['PLTYP'].'",
-                                    "'.$datos['BPLAN'].'",
+                                    "'.@$datos['SUBTY'].'",
+                                    "'.@$datos['ENDDA'].'",
+                                    "'.@$datos['BEGDA'].'",
+                                    "'.@$datos['AEDTM'].'",
+                                    "'.@$datos['UNAME'].'",
+                                    "'.@$datos['BAREA'].'",
+                                    "'.@$datos['PLTYP'].'",
+                                    "'.@$datos['BPLAN'].'",
                                     "'.@$datos['ELIDT'].'",
-                                    "'.$datos['ENRTY'].'",
-                                    "'.$datos['PERIO'].'",
+                                    "'.@$datos['ENRTY'].'",
+                                    "'.@$datos['PERIO'].'",
                                     "'.@$datos['PTPCT'].'",
                                     "'.@$datos['PSTTX'].'")');
 
@@ -228,15 +312,24 @@ function Insertar0171($datos, $connBD)
 {
     $Insertar = $connBD->query('CALL sp_inf_0171(
         '.$datos['PERNR'].',
-       "'.$datos['ENDDA'].'",
-       "'.$datos['BEGDA'].'",
-       "'.$datos['BAREA'].'",
-       "'.$datos['BENGR'].'",
-       "'.$datos['BSTAT'].'")');
+       "'.@$datos['ENDDA'].'",
+       "'.@$datos['BEGDA'].'",
+       "'.@$datos['BAREA'].'",
+       "'.@$datos['BENGR'].'",
+       "'.@$datos['BSTAT'].'")');
 
     if ($Insertar) {
         return $Insertar;
     } else {
+        echo 'CALL sp_inf_0171(
+            '.$datos['PERNR'].',
+           "'.$datos['ENDDA'].'",
+           "'.$datos['BEGDA'].'",
+           "'.$datos['BAREA'].'",
+           "'.$datos['BENGR'].'",
+           "'.$datos['BSTAT'].'")';
+        exit;
+
         return 0;
     }
 }

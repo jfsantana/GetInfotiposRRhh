@@ -1,5 +1,3 @@
-<?php 
+<?php
 
-header("Location:../index.php");
-
-?>
+echo 'Debe contactarse con el administrador del servicio';
