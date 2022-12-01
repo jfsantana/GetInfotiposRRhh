@@ -7,22 +7,40 @@ $tiempo_inicial = microtime(true);
 $token = '';
 $resultado = [];
 $annoActual = date('Y');
+if (isset($_GET)) {
+    $annoDesde = @$_GET['anno'];
+} else {
+    $annoDesde = 2020;
+}
 
-$vaciarTabla = limpiar($connBD);
+if (empty($annoDesde)) {
+    $annoDesde = 2020;
+}
+
 $respuesta = [];
 
-for ($anno = 2000; $anno <= $annoActual; ++$anno) {
+$listadoInfotipos = listaInfotipos1($connBD);
+
+foreach ($listadoInfotipos as $infotipos) {
+    $vaciarTabla = limpiar($connBD, $infotipos['infotipos']);
+}
+
+for ($anno = $annoDesde; $anno <= $annoActual; ++$anno) {
     $parametrosIN['FECHA_INI'] = $anno.'-01-01';
 
-    $listadoInfotipos = listaInfotipos($connBD);
+    $listadoInfotipos = listaInfotipos1($connBD);
     $respuestaInfo = [];
+
+    // $vaciarTabla = limpiar($connBD, $infotipos['infotipos'], $anno);
     foreach ($listadoInfotipos as $infotipos) {
+        //  $vaciarTabla = limpiar($connBD, $infotipos['infotipos']);
         $parametrosIN['INFOTIPO'] = $infotipos['infotipos'];
         $infotipoAux = 'INF_'.$parametrosIN['INFOTIPO'];
         $parametros = json_encode($parametrosIN);
         $token = '';
         $URL = 'http://pqvmorsap03.pequiven.com:50000/RESTAdapter/SobrePago/getDatos_INFOTIPOS';
-        $rs = API::POST($URL, $token, $parametros);
+
+        $rs = API::POST_Aut($URL, $token, $parametros);
         $rs = API::JSON_TO_ARRAY($rs);
         $json_string = json_encode($rs);
 
@@ -57,21 +75,23 @@ for ($anno = 2000; $anno <= $annoActual; ++$anno) {
                     }
                 }
             }
-
-            $resultado[$anno][$infotipoAux] = [
-                                                   'MSG' => 'Actualizado Correctamente',
-                                                    'TotalRow' => $numTotalInsert,
-                                ];
+            $resultadoAux = [
+                                $resultadoAux1['infotipo'] = $infotipoAux,
+                                $resultadoAux1['TotalRow'] = $numTotalInsert,
+                            ];
+            $resultado[$anno][] = $resultadoAux;
         }
+
+        // unset($resultadoAux);
         $log0002 = logInfotipos($infotipoAux, 1, $connBD, $parametrosIN['FECHA_INI']);
     }
 }
 
 mysqli_close($connBD);
 
-echo '<pre>'.print_r($resultado, true).'</pre>';
-// echo json_encode($resultado);
+// echo '<pre>'.print_r($resultado, true).'</pre>';exit;
+echo json_encode($resultado);
 $tiempo_final = microtime(true);
 $tiempo = $tiempo_final - $tiempo_inicial; // este resultado estará en segundos
-echo 'Ejecución : '.$tiempo.' segundos';
+// echo 'Ejecución : '.$tiempo.' segundos';
 exit;

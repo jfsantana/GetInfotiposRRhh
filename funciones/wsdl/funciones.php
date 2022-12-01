@@ -1,14 +1,17 @@
 <?php
 
+require_once 'conn.php';
 // set_time_limit(0);
+/*
 set_time_limit(6000000);
 ini_set('max_execution_time', 6000000);
-$connBD = new mysqli('localhost', 'root', '', 'rrhh_infotipo');
+$connBD = new mysqli('localhost', 'seip', 'adminsyaait', 'rrhh_infotipo');
 $connBD->query("SET NAMES 'utf8'"); // Para que se muestren las tildes
 if (!$connBD) {
     echo 'Error: No se pudo conectar a MySQL.'.PHP_EOL;
     exit;
 }
+*/
 /*********************************FUNCTION*************************/
 
 function insertInfotipo($infotipo, $items, $connBD)
@@ -41,28 +44,38 @@ function insertInfotipo($infotipo, $items, $connBD)
     return $insert;
 }
 
-function limpiar($connBD)
+function limpiar($connBD, $infotipo)
 {
-    $query = 'delete from  inf_0002';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0021';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0032';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0167';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0168';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0169';
-    $borrar = $connBD->query($query);
-
-    $query = 'delete from  inf_0171';
-    $borrar = $connBD->query($query);
+    switch ($infotipo) {
+        case '0002':
+            $query = 'delete from  inf_0002';
+            $borrar = $connBD->query($query);
+            break;
+        case '0021':
+            $query = 'delete from  inf_0021';
+            $borrar = $connBD->query($query);
+            break;
+        case '0032':
+            $query = 'delete from  inf_0032';
+            $borrar = $connBD->query($query);
+            break;
+        case '0167':
+            $query = 'delete from  inf_0167';
+            $borrar = $connBD->query($query);
+            break;
+        case '0168':
+            $query = 'delete from  inf_0168';
+            $borrar = $connBD->query($query);
+            break;
+        case '0169':
+            $query = 'delete from  inf_0169';
+            $borrar = $connBD->query($query);
+            break;
+        case '0171':
+            $query = 'delete from  inf_0171';
+            $borrar = $connBD->query($query);
+            break;
+    }
 
     if ($borrar) {
         return $borrar;
@@ -334,7 +347,7 @@ function Insertar0171($datos, $connBD)
     }
 }
 
-function listaInfotipos($connBD)
+function listaInfotipos1($connBD)
 {
     $query = 'select * from inf_setting where estatus = 1 order by 2';
 

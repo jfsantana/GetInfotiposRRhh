@@ -1,3 +1,5 @@
-<?php
+<?php 
 
-echo 'Debe contactarse con el administrador del servicio';
+include('vistas/login.php');
+
+?>

@@ -20,6 +20,30 @@
 class API
 {
     /**
+     * Consultar a un servidor a través del protocolo HTTP (GET).
+     * Se utiliza para consultar recursos en una API REST.
+     *
+     * @param string $URL   URL recurso, ejemplo: http://website.com/recurso/(id) no obligatorio
+     * @param string $TOKEN token de autenticación
+     *
+     * @return JSON
+     */
+    public static function GET($URL, $TOKEN)
+    {
+        $headers = ['Authorization: Bearer '.$TOKEN];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $URL);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+        // echo $response;die;
+        curl_close($ch);
+
+        return $response;
+    }
+
+    /**
      * Enviar parámetros a un servidor a través del protocolo HTTP (POST).
      * Se utiliza para agregar datos en una API REST.
      *
@@ -30,6 +54,41 @@ class API
      * @return JSON
      */
     public static function POST($URL, $TOKEN, $ARRAY)
+    {
+        $datapost = '';
+
+        $datapost = $ARRAY; // http_build_query($ARRAY, 'banderas_');
+
+        $headers = ['Authorization: Bearer '.$TOKEN];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $URL);
+        // curl_setopt($ch, CURLOPT_HTTPAUTH, 'PIUSERWS01:Pequiven21*');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $datapost);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        // curl_setopt($ch, CURLOPT_USERPWD, 'PIUSERWS01:Pequiven21*');
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return $response;
+    }
+
+    /**
+     * Enviar parámetros a un servidor a través del protocolo HTTP (POST).
+     * Se utiliza para agregar datos en una API REST.
+     *
+     * @param string $URL   URL recurso, ejemplo: http://website.com/recurso
+     * @param string $TOKEN token de autenticación
+     * @param array  $ARRAY parámetros a envíar
+     *
+     * @return JSON
+     */
+    public static function POST_Aut($URL, $TOKEN, $ARRAY)
     {
         $datapost = '';
 
@@ -69,7 +128,7 @@ class API
      *
      * @return JSON
      */
-    public static function GET($URL, $TOKEN)
+    public static function GET_Aut($URL, $TOKEN)
     {
         $username = 'PIUSERWS01';
         $password = 'Pequiven21*';
